@@ -1,6 +1,6 @@
 const Discord = require('discord.js'); // lib do discord.js
 
-const {TOKEN, PREFIX, PREFIX_MUSIC, ROLE_MASTER, ROLE_SUB, ROLE_ADMIN, CHAT_CHANNEL, COMMAND_CHANNEL} = require('./config.json'); // arquivo para manter as configs
+var {TOKEN, PREFIX, PREFIX_MUSIC, ROLE_MASTER, CHAT_CHANNEL, COMMAND_CHANNEL} = require('./config.json'); // arquivo para manter as configs
 const levels = require('./levels.json'); // arquivo para manter os niveis
 
 /*----------------------------------
@@ -13,9 +13,7 @@ const GuildModel = require('./models/Guild');
  VARIABLES & SETS
 ---------------------------------- */
 var bot = new Discord.Client(); // cria a variavel do client
-var server = new Discord.Guild(); // cria a variavel do server
 var channelsCommand = ['424985836694798346', '568928952316329984']; // cria variavel dos canais que permitem comandos
-var channelChat; // cria a variavel para armazenar o canal de chat
 var channelCommand = channelsCommand[0]; // cria a variavel para armazenar o canal de comandos
 const { connect } = require('mongoose'); // cria variavel de conexao do mongoose
 
@@ -111,7 +109,11 @@ async function RedirectMessage(msg, channelNext, option=''){
                 msg.delete();
                 channelCommand = bot.channels.fetch(channelNext)
                 .then((channel) => {
-                    channel.send(`${msg} [comando enviado por ${msg.author}]`);
+                    var embedRedirectMessage = new Discord.MessageEmbed() // CRIA O EMBED PARA A MENSAGEM
+                    .setColor('#9b59b6') // SETA A COR DO EMBED
+                    .setTitle(msg) // SETA O TITULO DO EMBED
+                    .setDescription(`Autor da mensagem: ${msg.author}`) // SETA A DESCRICAO DO EMBED
+                    channel.send(embedRedirectMessage);
                     if(!channelsCommand.includes(channelCommand)){
                         channelsCommand.join(channelCommand);
                     }
@@ -130,7 +132,11 @@ async function RedirectMessage(msg, channelNext, option=''){
                 bot.channels.fetch(channelNext) // PEGA O CANAL DE CHAT ATRAVES DO ID
                 // SE ENCONTRAR O CHANNEL ACIMA
                 .then(channel => {
-                    channel.send(`${msg.author} enviou uma mensagem em um canal errado...\n${msg}`); // REENVIA A MENSAGEM NO CANA CORRETO
+                    var embedRedirectMessage = new Discord.MessageEmbed() // CRIA O EMBED PARA A MENSAGEM
+                    .setColor('#9b59b6') // SETA A COR DO EMBED
+                    .setTitle(msg) // SETA O TITULO DO EMBED
+                    .setDescription(`Autor da mensagem: ${msg.author}`) // SETA A DESCRICAO DO EMBED
+                    channel.send(embedRedirectMessage); // REENVIA A MENSAGEM NO CANA CORRETO
                 })
                 .catch(console.error); // SE OCORRER ALGUM ERRO AO ENCONTRAR O CANAL, EXIBIR O ERRO NO CONSOLE
             }
@@ -142,7 +148,11 @@ async function RedirectMessage(msg, channelNext, option=''){
             msg.delete();
             channelCommand = bot.channels.fetch(channelNext)
             .then((channel) => {
-                channel.send(`${msg}`);
+                var embedRedirectMessage = new Discord.MessageEmbed() // CRIA O EMBED PARA A MENSAGEM
+                    .setColor('#9b59b6') // SETA A COR DO EMBED
+                    .setTitle(msg) // SETA O TITULO DO EMBED
+                    .setDescription(`Autor da mensagem: ${msg.author}`) // SETA A DESCRICAO DO EMBED
+                channel.send(embedRedirectMessage);
                 if(!channelsCommand.includes(channelCommand)){
                     channelsCommand.join(channelCommand);
                 }
@@ -206,6 +216,30 @@ bot.on("message", async (message) => {
     // ADICIONA A PESSA NA COMPETICAO
     else if(message.content == PREFIX+'rank'){
         ShowRankLeague(message.member, message.channel, message.guild);
+    }
+    // SETA AS CONFIGURACOES PARA O SERVIDOR
+    else if(message.content.startsWith(PREFIX+'config')){
+        var str = message.content.replace(PREFIX+'config ', ''); // VARIAVEL PARA ARMAZENAR A STRING PARA CONFIG
+
+        // SE A STRING FOR PARA ALTERAR O PREFIX
+        if(str.startsWith('prefix')){
+            PREFIX = str.replace('prefix ', '').trim(); // ALTERA O PREFIX PARA A STRING TRATADA
+        }
+
+        // SE A STRING FOR PARA ALTERAR O PREFIX_MUSIC
+        else if(str.startsWith('prefix_music')){
+            PREFIX_MUSIC = str.replace('prefix_music ', '').trim(); // ALTERA O PREFIX_MUSIC PARA A STRING TRATADA
+        }
+
+        // SE A STRING FOR PARA ALTERAR O CHAT_CHANNEL
+        else if(str.startsWith('chat_channel')){
+            CHAT_CHANNEL = str.replace('chat_channel ', '').trim(); // ALTERA O CHAT_CHANNEL PARA A STRING TRATADA
+        }
+
+        // SE A STRING FOR PARA ALTERAR O COMMAND_CHANNEL
+        else if(str.startsWith('command_channel')){
+            COMMAND_CHANNEL = str.replace('command_channel ', '').trim(); // ALTERA O COMMAND_CHANNEL PARA A STRING TRATADA
+        }
     }
     // SE MANDAR ALGUMA MENSAGEM NO CANAL DE BOTS QUE NAO SEJA UM COMANDO
     else{
