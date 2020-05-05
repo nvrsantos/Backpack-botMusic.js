@@ -1,0 +1,20 @@
+{
+  "name": "Backpack-botMusic.js",
+  "version": "0.0.1",
+  "description": "A bot of music for discord",
+  "main": "app.js",
+  "repository": "https://github.com/nvrsantos/Backpack-botMusic.js.git",
+  "author": "nevr001 <playcar46@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^12.2.0",
+    "ffmpeg": "^0.0.4",
+    "mongoose": "^5.9.10",
+    "node-opus": "^0.3.3",
+    "yt-search": "^1.1.2",
+    "ytdl-core": "^2.1.1"
+  },
+  "scripts": {
+    "start": "node app.js"
+  }
+}
